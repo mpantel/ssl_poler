@@ -1,0 +1,22 @@
+# Example SSL Poler configuration file
+#
+# URLs can be specified as simple strings or as objects with name and url
+
+urls:
+  # Simple URL format
+  - https://example.com
+  - https://google.com
+
+  # Named URL format (useful for better reporting)
+  - name: GitHub
+    url: https://github.com
+
+  - name: Ruby Gems
+    url: https://rubygems.org
+
+  - name: Stack Overflow
+    url: https://stackoverflow.com
+
+  # You can also include custom domains
+  - name: My Website
+    url: https://mywebsite.com
