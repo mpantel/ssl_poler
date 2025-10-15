@@ -155,7 +155,53 @@ module SslPoler
       puts "  Expiring Soon: #{expiring_soon}"
       puts "  Expired:       #{expired}"
       puts "  Errors:        #{errors}"
+      puts ""
+      display_summary_table(results)
       puts "=" * 80
+    end
+
+    def display_summary_table(results)
+      # Calculate column widths
+      max_name_width = [results.map { |r| r[:name].to_s.length }.max || 4, 20].min
+      max_url_width = [results.map { |r| r[:url].to_s.length }.max || 3, 40].min
+      status_width = 10
+      expiry_width = 19
+
+      # Print header
+      puts "  " + "-" * (max_name_width + max_url_width + status_width + expiry_width + 10)
+      printf("  %-#{max_name_width}s | %-#{max_url_width}s | %-#{status_width}s | %-#{expiry_width}s\n",
+             "Name", "URL", "Status", "Expiry Date")
+      puts "  " + "-" * (max_name_width + max_url_width + status_width + expiry_width + 10)
+
+      # Print rows
+      results.each do |result|
+        name = result[:name].to_s.length > max_name_width ?
+               result[:name].to_s[0...(max_name_width-3)] + "..." :
+               result[:name].to_s
+
+        url = result[:url].to_s.length > max_url_width ?
+              result[:url].to_s[0...(max_url_width-3)] + "..." :
+              result[:url].to_s
+
+        if result[:error]
+          status = "ERROR"
+          expiry = "N/A"
+        elsif result[:expired]
+          status = "EXPIRED"
+          expiry = result[:not_after].strftime("%Y-%m-%d")
+        elsif result[:expires_soon]
+          status = "WARNING"
+          expiry = result[:not_after].strftime("%Y-%m-%d")
+        else
+          status = "OK"
+          expiry = result[:not_after].strftime("%Y-%m-%d")
+        end
+
+        printf("  %-#{max_name_width}s | %-#{max_url_width}s | %-#{status_width}s | %-#{expiry_width}s\n",
+               name, url, status, expiry)
+      end
+
+      puts "  " + "-" * (max_name_width + max_url_width + status_width + expiry_width + 10)
     end
   end
 end
